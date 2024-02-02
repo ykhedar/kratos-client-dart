@@ -1,0 +1,10 @@
+pubAuthor: Autrik UG
+pubAuthorEmail: info@autrik.com
+pubHomepage: https://www.autrik.com
+pubName: ory_kratos_client
+pubDescription: "DJI SDK"
+pubRepository: https://github.com/ykhedar/ory_kratos_client
+pubVersion: 1.0.0
+
+disallowAdditionalPropertiesIfNotPresent: false
+# serializationLibrary: json_serializable

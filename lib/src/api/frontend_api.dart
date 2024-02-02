@@ -30,6 +30,7 @@ import 'package:ory_kratos_client/src/model/update_verification_flow_body.dart';
 import 'package:ory_kratos_client/src/model/verification_flow.dart';
 
 class FrontendApi {
+
   final Dio _dio;
 
   final Serializers _serializers;
@@ -53,8 +54,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [LoginFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<LoginFlow>> createBrowserLoginFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<LoginFlow>> createBrowserLoginFlow({ 
     bool? refresh,
     String? aal,
     String? returnTo,
@@ -82,17 +83,10 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (refresh != null)
-        r'refresh':
-            encodeQueryParameter(_serializers, refresh, const FullType(bool)),
-      if (aal != null)
-        r'aal': encodeQueryParameter(_serializers, aal, const FullType(String)),
-      if (returnTo != null)
-        r'return_to': encodeQueryParameter(
-            _serializers, returnTo, const FullType(String)),
-      if (loginChallenge != null)
-        r'login_challenge': encodeQueryParameter(
-            _serializers, loginChallenge, const FullType(String)),
+      if (refresh != null) r'refresh': encodeQueryParameter(_serializers, refresh, const FullType(bool)),
+      if (aal != null) r'aal': encodeQueryParameter(_serializers, aal, const FullType(String)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
+      if (loginChallenge != null) r'login_challenge': encodeQueryParameter(_serializers, loginChallenge, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -104,21 +98,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    LoginFlow _responseData;
+    LoginFlow? _responseData;
 
     try {
-      const _responseType = FullType(LoginFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(LoginFlow),
       ) as LoginFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<LoginFlow>(
@@ -138,6 +134,7 @@ class FrontendApi {
   ///
   /// Parameters:
   /// * [cookie] - HTTP Cookies  If you call this endpoint from a backend, please include the original Cookie header in the request.
+  /// * [returnTo] - Return to URL  The URL to which the browser should be redirected to after the logout has been performed.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -146,9 +143,10 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [LogoutFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<LogoutFlow>> createBrowserLogoutFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<LogoutFlow>> createBrowserLogoutFlow({ 
     String? cookie,
+    String? returnTo,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -170,29 +168,36 @@ class FrontendApi {
       validateStatus: validateStatus,
     );
 
+    final _queryParameters = <String, dynamic>{
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
+    };
+
     final _response = await _dio.request<Object>(
       _path,
       options: _options,
+      queryParameters: _queryParameters,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
     );
 
-    LogoutFlow _responseData;
+    LogoutFlow? _responseData;
 
     try {
-      const _responseType = FullType(LogoutFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(LogoutFlow),
       ) as LogoutFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<LogoutFlow>(
@@ -220,8 +225,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RecoveryFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RecoveryFlow>> createBrowserRecoveryFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RecoveryFlow>> createBrowserRecoveryFlow({ 
     String? returnTo,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -244,9 +249,7 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (returnTo != null)
-        r'return_to': encodeQueryParameter(
-            _serializers, returnTo, const FullType(String)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -258,21 +261,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    RecoveryFlow _responseData;
+    RecoveryFlow? _responseData;
 
     try {
-      const _responseType = FullType(RecoveryFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RecoveryFlow),
       ) as RecoveryFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RecoveryFlow>(
@@ -302,8 +307,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RegistrationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RegistrationFlow>> createBrowserRegistrationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RegistrationFlow>> createBrowserRegistrationFlow({ 
     String? returnTo,
     String? loginChallenge,
     String? afterVerificationReturnTo,
@@ -328,15 +333,9 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (returnTo != null)
-        r'return_to': encodeQueryParameter(
-            _serializers, returnTo, const FullType(String)),
-      if (loginChallenge != null)
-        r'login_challenge': encodeQueryParameter(
-            _serializers, loginChallenge, const FullType(String)),
-      if (afterVerificationReturnTo != null)
-        r'after_verification_return_to': encodeQueryParameter(
-            _serializers, afterVerificationReturnTo, const FullType(String)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
+      if (loginChallenge != null) r'login_challenge': encodeQueryParameter(_serializers, loginChallenge, const FullType(String)),
+      if (afterVerificationReturnTo != null) r'after_verification_return_to': encodeQueryParameter(_serializers, afterVerificationReturnTo, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -348,21 +347,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    RegistrationFlow _responseData;
+    RegistrationFlow? _responseData;
 
     try {
-      const _responseType = FullType(RegistrationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RegistrationFlow),
       ) as RegistrationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RegistrationFlow>(
@@ -391,8 +392,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [SettingsFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<SettingsFlow>> createBrowserSettingsFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SettingsFlow>> createBrowserSettingsFlow({ 
     String? returnTo,
     String? cookie,
     CancelToken? cancelToken,
@@ -417,9 +418,7 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (returnTo != null)
-        r'return_to': encodeQueryParameter(
-            _serializers, returnTo, const FullType(String)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -431,21 +430,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    SettingsFlow _responseData;
+    SettingsFlow? _responseData;
 
     try {
-      const _responseType = FullType(SettingsFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SettingsFlow),
       ) as SettingsFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<SettingsFlow>(
@@ -473,8 +474,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [VerificationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<VerificationFlow>> createBrowserVerificationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<VerificationFlow>> createBrowserVerificationFlow({ 
     String? returnTo,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -497,9 +498,7 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (returnTo != null)
-        r'return_to': encodeQueryParameter(
-            _serializers, returnTo, const FullType(String)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -511,21 +510,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    VerificationFlow _responseData;
+    VerificationFlow? _responseData;
 
     try {
-      const _responseType = FullType(VerificationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(VerificationFlow),
       ) as VerificationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<VerificationFlow>(
@@ -547,6 +548,8 @@ class FrontendApi {
   /// * [refresh] - Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session.
   /// * [aal] - Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session's authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \"upgrade\" the session's security by asking the user to perform TOTP / WebAuth/ ... you would set this to \"aal2\".
   /// * [xSessionToken] - The Session Token of the Identity performing the settings flow.
+  /// * [returnSessionTokenExchangeCode] - EnableSessionTokenExchangeCode requests the login flow to include a code that can be used to retrieve the session token after the login flow has been completed.
+  /// * [returnTo] - The URL to return the browser to after the flow was completed.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -555,11 +558,13 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [LoginFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<LoginFlow>> createNativeLoginFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<LoginFlow>> createNativeLoginFlow({ 
     bool? refresh,
     String? aal,
     String? xSessionToken,
+    bool? returnSessionTokenExchangeCode,
+    String? returnTo,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -582,11 +587,10 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (refresh != null)
-        r'refresh':
-            encodeQueryParameter(_serializers, refresh, const FullType(bool)),
-      if (aal != null)
-        r'aal': encodeQueryParameter(_serializers, aal, const FullType(String)),
+      if (refresh != null) r'refresh': encodeQueryParameter(_serializers, refresh, const FullType(bool)),
+      if (aal != null) r'aal': encodeQueryParameter(_serializers, aal, const FullType(String)),
+      if (returnSessionTokenExchangeCode != null) r'return_session_token_exchange_code': encodeQueryParameter(_serializers, returnSessionTokenExchangeCode, const FullType(bool)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -598,21 +602,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    LoginFlow _responseData;
+    LoginFlow? _responseData;
 
     try {
-      const _responseType = FullType(LoginFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(LoginFlow),
       ) as LoginFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<LoginFlow>(
@@ -639,8 +645,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RecoveryFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RecoveryFlow>> createNativeRecoveryFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RecoveryFlow>> createNativeRecoveryFlow({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -669,21 +675,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    RecoveryFlow _responseData;
+    RecoveryFlow? _responseData;
 
     try {
-      const _responseType = FullType(RecoveryFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RecoveryFlow),
       ) as RecoveryFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RecoveryFlow>(
@@ -702,6 +710,8 @@ class FrontendApi {
   /// This endpoint initiates a registration flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error will be returned unless the URL query parameter &#x60;?refresh&#x3D;true&#x60; is set.  To fetch an existing registration flow call &#x60;/self-service/registration/flows?flow&#x3D;&lt;flow_id&gt;&#x60;.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  In the case of an error, the &#x60;error.id&#x60; of the JSON response body can be one of:  &#x60;session_already_available&#x60;: The user is already signed in. &#x60;security_csrf_violation&#x60;: Unable to fetch the flow because a CSRF violation occurred.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
   ///
   /// Parameters:
+  /// * [returnSessionTokenExchangeCode] - EnableSessionTokenExchangeCode requests the login flow to include a code that can be used to retrieve the session token after the login flow has been completed.
+  /// * [returnTo] - The URL to return the browser to after the flow was completed.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -710,8 +720,10 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RegistrationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RegistrationFlow>> createNativeRegistrationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RegistrationFlow>> createNativeRegistrationFlow({ 
+    bool? returnSessionTokenExchangeCode,
+    String? returnTo,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -732,29 +744,37 @@ class FrontendApi {
       validateStatus: validateStatus,
     );
 
+    final _queryParameters = <String, dynamic>{
+      if (returnSessionTokenExchangeCode != null) r'return_session_token_exchange_code': encodeQueryParameter(_serializers, returnSessionTokenExchangeCode, const FullType(bool)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
+    };
+
     final _response = await _dio.request<Object>(
       _path,
       options: _options,
+      queryParameters: _queryParameters,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
     );
 
-    RegistrationFlow _responseData;
+    RegistrationFlow? _responseData;
 
     try {
-      const _responseType = FullType(RegistrationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RegistrationFlow),
       ) as RegistrationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RegistrationFlow>(
@@ -782,8 +802,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [SettingsFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<SettingsFlow>> createNativeSettingsFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SettingsFlow>> createNativeSettingsFlow({ 
     String? xSessionToken,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -814,21 +834,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    SettingsFlow _responseData;
+    SettingsFlow? _responseData;
 
     try {
-      const _responseType = FullType(SettingsFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SettingsFlow),
       ) as SettingsFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<SettingsFlow>(
@@ -855,8 +877,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [VerificationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<VerificationFlow>> createNativeVerificationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<VerificationFlow>> createNativeVerificationFlow({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -885,21 +907,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    VerificationFlow _responseData;
+    VerificationFlow? _responseData;
 
     try {
-      const _responseType = FullType(VerificationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(VerificationFlow),
       ) as VerificationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<VerificationFlow>(
@@ -928,8 +952,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [DeleteMySessionsCount] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<DeleteMySessionsCount>> disableMyOtherSessions({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<DeleteMySessionsCount>> disableMyOtherSessions({ 
     String? xSessionToken,
     String? cookie,
     CancelToken? cancelToken,
@@ -962,21 +986,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    DeleteMySessionsCount _responseData;
+    DeleteMySessionsCount? _responseData;
 
     try {
-      const _responseType = FullType(DeleteMySessionsCount);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(DeleteMySessionsCount),
       ) as DeleteMySessionsCount;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<DeleteMySessionsCount>(
@@ -1006,8 +1032,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future]
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<void>> disableMySession({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<void>> disableMySession({ 
     required String id,
     String? xSessionToken,
     String? cookie,
@@ -1018,7 +1044,7 @@ class FrontendApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/sessions/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/sessions/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
     final _options = Options(
       method: r'DELETE',
       headers: <String, dynamic>{
@@ -1044,6 +1070,89 @@ class FrontendApi {
     return _response;
   }
 
+  /// Exchange Session Token
+  /// 
+  ///
+  /// Parameters:
+  /// * [initCode] - The part of the code return when initializing the flow.
+  /// * [returnToCode] - The part of the code returned by the return_to URL.
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [SuccessfulNativeLogin] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SuccessfulNativeLogin>> exchangeSessionToken({ 
+    required String initCode,
+    required String returnToCode,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/sessions/token-exchange';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{
+        ...?headers,
+      },
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      r'init_code': encodeQueryParameter(_serializers, initCode, const FullType(String)),
+      r'return_to_code': encodeQueryParameter(_serializers, returnToCode, const FullType(String)),
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    SuccessfulNativeLogin? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SuccessfulNativeLogin),
+      ) as SuccessfulNativeLogin;
+
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<SuccessfulNativeLogin>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Get User-Flow Errors
   /// This endpoint returns the error associated with a user-facing self service errors.  This endpoint supports stub values to help you implement the error UI:  &#x60;?id&#x3D;stub:500&#x60; - returns a stub 500 (Internal Server Error) error.  More information can be found at [Ory Kratos User User Facing Error Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-facing-errors).
   ///
@@ -1057,8 +1166,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [FlowError] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<FlowError>> getFlowError({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<FlowError>> getFlowError({ 
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1093,21 +1202,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    FlowError _responseData;
+    FlowError? _responseData;
 
     try {
-      const _responseType = FullType(FlowError);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(FlowError),
       ) as FlowError;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<FlowError>(
@@ -1136,8 +1247,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [LoginFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<LoginFlow>> getLoginFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<LoginFlow>> getLoginFlow({ 
     required String id,
     String? cookie,
     CancelToken? cancelToken,
@@ -1174,21 +1285,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    LoginFlow _responseData;
+    LoginFlow? _responseData;
 
     try {
-      const _responseType = FullType(LoginFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(LoginFlow),
       ) as LoginFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<LoginFlow>(
@@ -1217,8 +1330,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RecoveryFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RecoveryFlow>> getRecoveryFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RecoveryFlow>> getRecoveryFlow({ 
     required String id,
     String? cookie,
     CancelToken? cancelToken,
@@ -1255,21 +1368,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    RecoveryFlow _responseData;
+    RecoveryFlow? _responseData;
 
     try {
-      const _responseType = FullType(RecoveryFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RecoveryFlow),
       ) as RecoveryFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RecoveryFlow>(
@@ -1298,8 +1413,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RegistrationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RegistrationFlow>> getRegistrationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RegistrationFlow>> getRegistrationFlow({ 
     required String id,
     String? cookie,
     CancelToken? cancelToken,
@@ -1336,21 +1451,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    RegistrationFlow _responseData;
+    RegistrationFlow? _responseData;
 
     try {
-      const _responseType = FullType(RegistrationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RegistrationFlow),
       ) as RegistrationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RegistrationFlow>(
@@ -1380,8 +1497,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [SettingsFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<SettingsFlow>> getSettingsFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SettingsFlow>> getSettingsFlow({ 
     required String id,
     String? xSessionToken,
     String? cookie,
@@ -1420,21 +1537,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    SettingsFlow _responseData;
+    SettingsFlow? _responseData;
 
     try {
-      const _responseType = FullType(SettingsFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SettingsFlow),
       ) as SettingsFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<SettingsFlow>(
@@ -1463,8 +1582,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [VerificationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<VerificationFlow>> getVerificationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<VerificationFlow>> getVerificationFlow({ 
     required String id,
     String? cookie,
     CancelToken? cancelToken,
@@ -1501,21 +1620,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    VerificationFlow _responseData;
+    VerificationFlow? _responseData;
 
     try {
-      const _responseType = FullType(VerificationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(VerificationFlow),
       ) as VerificationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<VerificationFlow>(
@@ -1542,8 +1663,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [String] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<String>> getWebAuthnJavaScript({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<String>> getWebAuthnJavaScript({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1572,17 +1693,20 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    String _responseData;
+    String? _responseData;
 
     try {
-      _responseData = _response.data as String;
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : rawResponse as String;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<String>(
@@ -1613,8 +1737,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [BuiltList<Session>] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<BuiltList<Session>>> listMySessions({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<BuiltList<Session>>> listMySessions({ 
     int? perPage = 250,
     int? page = 1,
     String? xSessionToken,
@@ -1642,11 +1766,8 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (perPage != null)
-        r'per_page':
-            encodeQueryParameter(_serializers, perPage, const FullType(int)),
-      if (page != null)
-        r'page': encodeQueryParameter(_serializers, page, const FullType(int)),
+      if (perPage != null) r'per_page': encodeQueryParameter(_serializers, perPage, const FullType(int)),
+      if (page != null) r'page': encodeQueryParameter(_serializers, page, const FullType(int)),
     };
 
     final _response = await _dio.request<Object>(
@@ -1658,21 +1779,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    BuiltList<Session> _responseData;
+    BuiltList<Session>? _responseData;
 
     try {
-      const _responseType = FullType(BuiltList, [FullType(Session)]);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(BuiltList, [FullType(Session)]),
       ) as BuiltList<Session>;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<BuiltList<Session>>(
@@ -1691,7 +1814,7 @@ class FrontendApi {
   /// Use this endpoint to log out an identity using an Ory Session Token. If the Ory Session Token was successfully revoked, the server returns a 204 No Content response. A 204 No Content response is also sent when the Ory Session Token has been revoked already before.  If the Ory Session Token is malformed or does not exist a 403 Forbidden response will be returned.  This endpoint does not remove any HTTP Cookies - use the Browser-Based Self-Service Logout Flow instead.
   ///
   /// Parameters:
-  /// * [performNativeLogoutBody]
+  /// * [performNativeLogoutBody] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1700,8 +1823,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future]
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<void>> performNativeLogout({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<void>> performNativeLogout({ 
     required PerformNativeLogoutBody performNativeLogoutBody,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1728,17 +1851,18 @@ class FrontendApi {
 
     try {
       const _type = FullType(PerformNativeLogoutBody);
-      _bodyData =
-          _serializers.serialize(performNativeLogoutBody, specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioError(
-        requestOptions: _options.compose(
+      _bodyData = _serializers.serialize(performNativeLogoutBody, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
         ),
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     final _response = await _dio.request<Object>(
@@ -1754,9 +1878,10 @@ class FrontendApi {
   }
 
   /// Check Who the Current HTTP Session Belongs To
-  /// Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the &#39;X-Kratos-Authenticated-Identity-Id&#39; header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  &#x60;&#x60;&#x60;js pseudo-code example router.get(&#39;/protected-endpoint&#39;, async function (req, res) { const session &#x3D; await client.toSession(undefined, req.header(&#39;cookie&#39;))  console.log(session) }) &#x60;&#x60;&#x60;  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  &#x60;&#x60;&#x60;js pseudo-code example ... const session &#x3D; await client.toSession(\&quot;the-session-token\&quot;)  console.log(session) &#x60;&#x60;&#x60;  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the &#x60;X-Session-Token&#x60; header!  This endpoint authenticates users by checking:  if the &#x60;Cookie&#x60; HTTP header was set containing an Ory Kratos Session Cookie; if the &#x60;Authorization: bearer &lt;ory-session-token&gt;&#x60; HTTP header was set with a valid Ory Kratos Session Token; if the &#x60;X-Session-Token&#x60; HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The &#x60;error.id&#x60; can be one of:  &#x60;session_inactive&#x60;: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). &#x60;session_aal2_required&#x60;: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
+  /// Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the &#39;X-Kratos-Authenticated-Identity-Id&#39; header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  &#x60;&#x60;&#x60;js pseudo-code example router.get(&#39;/protected-endpoint&#39;, async function (req, res) { const session &#x3D; await client.toSession(undefined, req.header(&#39;cookie&#39;))  console.log(session) }) &#x60;&#x60;&#x60;  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  &#x60;&#x60;&#x60;js pseudo-code example ... const session &#x3D; await client.toSession(\&quot;the-session-token\&quot;)  console.log(session) &#x60;&#x60;&#x60;  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the &#x60;X-Session-Token&#x60; header!  This endpoint authenticates users by checking:  if the &#x60;Cookie&#x60; HTTP header was set containing an Ory Kratos Session Cookie; if the &#x60;Authorization: bearer &lt;ory-session-token&gt;&#x60; HTTP header was set with a valid Ory Kratos Session Token; if the &#x60;X-Session-Token&#x60; HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cookie or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The &#x60;error.id&#x60; can be one of:  &#x60;session_inactive&#x60;: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). &#x60;session_aal2_required&#x60;: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
   ///
   /// Parameters:
+  /// * [tokenizeAs] - Set the tokenize as query param for use in getting a jwt token.
   /// * [xSessionToken] - Set the Session Token when calling from non-browser clients. A session token has a format of `MP2YWEMeM8MxjkGKpH4dqOQ4Q4DlSPaj`.
   /// * [cookie] - Set the Cookie Header. This is especially useful when calling this endpoint from a server-side application. In that scenario you must include the HTTP Cookie Header which originally was included in the request to your server. An example of a session in the HTTP Cookie Header is: `ory_kratos_session=a19iOVAbdzdgl70Rq1QZmrKmcjDtdsviCTZx7m9a9yHIUS8Wa9T7hvqyGTsLHi6Qifn2WUfpAKx9DWp0SJGleIn9vh2YF4A16id93kXFTgIgmwIOvbVAScyrx7yVl6bPZnCx27ec4WQDtaTewC1CpgudeDV2jQQnSaCP6ny3xa8qLH-QUgYqdQuoA_LF1phxgRCUfIrCLQOkolX5nv3ze_f==`.  It is ok if more than one cookie are included here as all other cookies will be ignored.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1767,8 +1892,9 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [Session] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<Session>> toSession({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<Session>> toSession({ 
+    String? tokenizeAs,
     String? xSessionToken,
     String? cookie,
     CancelToken? cancelToken,
@@ -1793,29 +1919,36 @@ class FrontendApi {
       validateStatus: validateStatus,
     );
 
+    final _queryParameters = <String, dynamic>{
+      if (tokenizeAs != null) r'tokenize_as': encodeQueryParameter(_serializers, tokenizeAs, const FullType(String)),
+    };
+
     final _response = await _dio.request<Object>(
       _path,
       options: _options,
+      queryParameters: _queryParameters,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
     );
 
-    Session _responseData;
+    Session? _responseData;
 
     try {
-      const _responseType = FullType(Session);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(Session),
       ) as Session;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<Session>(
@@ -1835,7 +1968,7 @@ class FrontendApi {
   ///
   /// Parameters:
   /// * [flow] - The Login Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/login?flow=abcde`).
-  /// * [updateLoginFlowBody]
+  /// * [updateLoginFlowBody] 
   /// * [xSessionToken] - The Session Token of the Identity performing the settings flow.
   /// * [cookie] - HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1846,8 +1979,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [SuccessfulNativeLogin] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<SuccessfulNativeLogin>> updateLoginFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SuccessfulNativeLogin>> updateLoginFlow({ 
     required String flow,
     required UpdateLoginFlowBody updateLoginFlowBody,
     String? xSessionToken,
@@ -1883,18 +2016,19 @@ class FrontendApi {
 
     try {
       const _type = FullType(UpdateLoginFlowBody);
-      _bodyData =
-          _serializers.serialize(updateLoginFlowBody, specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioError(
-        requestOptions: _options.compose(
+      _bodyData = _serializers.serialize(updateLoginFlowBody, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
           queryParameters: _queryParameters,
         ),
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     final _response = await _dio.request<Object>(
@@ -1907,21 +2041,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    SuccessfulNativeLogin _responseData;
+    SuccessfulNativeLogin? _responseData;
 
     try {
-      const _responseType = FullType(SuccessfulNativeLogin);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SuccessfulNativeLogin),
       ) as SuccessfulNativeLogin;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<SuccessfulNativeLogin>(
@@ -1942,6 +2078,7 @@ class FrontendApi {
   /// Parameters:
   /// * [token] - A Valid Logout Token  If you do not have a logout token because you only have a session cookie, call `/self-service/logout/browser` to generate a URL for this endpoint.
   /// * [returnTo] - The URL to return to after the logout was completed.
+  /// * [cookie] - HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1950,10 +2087,11 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future]
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<void>> updateLogoutFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<void>> updateLogoutFlow({ 
     String? token,
     String? returnTo,
+    String? cookie,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1965,6 +2103,7 @@ class FrontendApi {
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{
+        if (cookie != null) r'Cookie': cookie,
         ...?headers,
       },
       extra: <String, dynamic>{
@@ -1975,12 +2114,8 @@ class FrontendApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (token != null)
-        r'token':
-            encodeQueryParameter(_serializers, token, const FullType(String)),
-      if (returnTo != null)
-        r'return_to': encodeQueryParameter(
-            _serializers, returnTo, const FullType(String)),
+      if (token != null) r'token': encodeQueryParameter(_serializers, token, const FullType(String)),
+      if (returnTo != null) r'return_to': encodeQueryParameter(_serializers, returnTo, const FullType(String)),
     };
 
     final _response = await _dio.request<Object>(
@@ -2000,7 +2135,7 @@ class FrontendApi {
   ///
   /// Parameters:
   /// * [flow] - The Recovery Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/recovery?flow=abcde`).
-  /// * [updateRecoveryFlowBody]
+  /// * [updateRecoveryFlowBody] 
   /// * [token] - Recovery Token  The recovery token which completes the recovery request. If the token is invalid (e.g. expired) an error will be shown to the end-user.  This parameter is usually set in a link and not used by any direct API call.
   /// * [cookie] - HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2011,8 +2146,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [RecoveryFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<RecoveryFlow>> updateRecoveryFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<RecoveryFlow>> updateRecoveryFlow({ 
     required String flow,
     required UpdateRecoveryFlowBody updateRecoveryFlowBody,
     String? token,
@@ -2041,27 +2176,26 @@ class FrontendApi {
 
     final _queryParameters = <String, dynamic>{
       r'flow': encodeQueryParameter(_serializers, flow, const FullType(String)),
-      if (token != null)
-        r'token':
-            encodeQueryParameter(_serializers, token, const FullType(String)),
+      if (token != null) r'token': encodeQueryParameter(_serializers, token, const FullType(String)),
     };
 
     dynamic _bodyData;
 
     try {
       const _type = FullType(UpdateRecoveryFlowBody);
-      _bodyData =
-          _serializers.serialize(updateRecoveryFlowBody, specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioError(
-        requestOptions: _options.compose(
+      _bodyData = _serializers.serialize(updateRecoveryFlowBody, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
           queryParameters: _queryParameters,
         ),
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     final _response = await _dio.request<Object>(
@@ -2074,21 +2208,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    RecoveryFlow _responseData;
+    RecoveryFlow? _responseData;
 
     try {
-      const _responseType = FullType(RecoveryFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(RecoveryFlow),
       ) as RecoveryFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<RecoveryFlow>(
@@ -2108,7 +2244,7 @@ class FrontendApi {
   ///
   /// Parameters:
   /// * [flow] - The Registration Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/registration?flow=abcde`).
-  /// * [updateRegistrationFlowBody]
+  /// * [updateRegistrationFlowBody] 
   /// * [cookie] - HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -2118,8 +2254,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [SuccessfulNativeRegistration] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<SuccessfulNativeRegistration>> updateRegistrationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SuccessfulNativeRegistration>> updateRegistrationFlow({ 
     required String flow,
     required UpdateRegistrationFlowBody updateRegistrationFlowBody,
     String? cookie,
@@ -2148,24 +2284,24 @@ class FrontendApi {
     final _queryParameters = <String, dynamic>{
       r'flow': encodeQueryParameter(_serializers, flow, const FullType(String)),
     };
-    print("headers: ${_options.headers}");
 
     dynamic _bodyData;
 
     try {
       const _type = FullType(UpdateRegistrationFlowBody);
-      _bodyData = _serializers.serialize(updateRegistrationFlowBody,
-          specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioError(
-        requestOptions: _options.compose(
+      _bodyData = _serializers.serialize(updateRegistrationFlowBody, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
           queryParameters: _queryParameters,
         ),
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     final _response = await _dio.request<Object>(
@@ -2178,21 +2314,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    SuccessfulNativeRegistration _responseData;
+    SuccessfulNativeRegistration? _responseData;
 
     try {
-      const _responseType = FullType(SuccessfulNativeRegistration);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SuccessfulNativeRegistration),
       ) as SuccessfulNativeRegistration;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<SuccessfulNativeRegistration>(
@@ -2212,7 +2350,7 @@ class FrontendApi {
   ///
   /// Parameters:
   /// * [flow] - The Settings Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/settings?flow=abcde`).
-  /// * [updateSettingsFlowBody]
+  /// * [updateSettingsFlowBody] 
   /// * [xSessionToken] - The Session Token of the Identity performing the settings flow.
   /// * [cookie] - HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2223,8 +2361,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [SettingsFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<SettingsFlow>> updateSettingsFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<SettingsFlow>> updateSettingsFlow({ 
     required String flow,
     required UpdateSettingsFlowBody updateSettingsFlowBody,
     String? xSessionToken,
@@ -2260,18 +2398,19 @@ class FrontendApi {
 
     try {
       const _type = FullType(UpdateSettingsFlowBody);
-      _bodyData =
-          _serializers.serialize(updateSettingsFlowBody, specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioError(
-        requestOptions: _options.compose(
+      _bodyData = _serializers.serialize(updateSettingsFlowBody, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
           queryParameters: _queryParameters,
         ),
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     final _response = await _dio.request<Object>(
@@ -2284,21 +2423,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    SettingsFlow _responseData;
+    SettingsFlow? _responseData;
 
     try {
-      const _responseType = FullType(SettingsFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(SettingsFlow),
       ) as SettingsFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<SettingsFlow>(
@@ -2318,7 +2459,7 @@ class FrontendApi {
   ///
   /// Parameters:
   /// * [flow] - The Verification Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/verification?flow=abcde`).
-  /// * [updateVerificationFlowBody]
+  /// * [updateVerificationFlowBody] 
   /// * [token] - Verification Token  The verification token which completes the verification request. If the token is invalid (e.g. expired) an error will be shown to the end-user.  This parameter is usually set in a link and not used by any direct API call.
   /// * [cookie] - HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2329,8 +2470,8 @@ class FrontendApi {
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
   /// Returns a [Future] containing a [Response] with a [VerificationFlow] as data
-  /// Throws [DioError] if API call or serialization fails
-  Future<Response<VerificationFlow>> updateVerificationFlow({
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<VerificationFlow>> updateVerificationFlow({ 
     required String flow,
     required UpdateVerificationFlowBody updateVerificationFlowBody,
     String? token,
@@ -2359,27 +2500,26 @@ class FrontendApi {
 
     final _queryParameters = <String, dynamic>{
       r'flow': encodeQueryParameter(_serializers, flow, const FullType(String)),
-      if (token != null)
-        r'token':
-            encodeQueryParameter(_serializers, token, const FullType(String)),
+      if (token != null) r'token': encodeQueryParameter(_serializers, token, const FullType(String)),
     };
 
     dynamic _bodyData;
 
     try {
       const _type = FullType(UpdateVerificationFlowBody);
-      _bodyData = _serializers.serialize(updateVerificationFlowBody,
-          specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioError(
-        requestOptions: _options.compose(
+      _bodyData = _serializers.serialize(updateVerificationFlowBody, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
           queryParameters: _queryParameters,
         ),
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     final _response = await _dio.request<Object>(
@@ -2392,21 +2532,23 @@ class FrontendApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    VerificationFlow _responseData;
+    VerificationFlow? _responseData;
 
     try {
-      const _responseType = FullType(VerificationFlow);
-      _responseData = _serializers.deserialize(
-        _response.data!,
-        specifiedType: _responseType,
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(VerificationFlow),
       ) as VerificationFlow;
+
     } catch (error, stackTrace) {
-      throw DioError(
+      throw DioException(
         requestOptions: _response.requestOptions,
         response: _response,
-        type: DioErrorType.other,
+        type: DioExceptionType.unknown,
         error: error,
-      )..stackTrace = stackTrace;
+        stackTrace: stackTrace,
+      );
     }
 
     return Response<VerificationFlow>(
@@ -2420,4 +2562,5 @@ class FrontendApi {
       extra: _response.extra,
     );
   }
+
 }

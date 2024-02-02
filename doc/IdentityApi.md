@@ -50,7 +50,7 @@ final PatchIdentitiesBody patchIdentitiesBody = ; // PatchIdentitiesBody |
 try {
     final response = api.batchPatchIdentities(patchIdentitiesBody);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->batchPatchIdentities: $e\n');
 }
 ```
@@ -97,7 +97,7 @@ final CreateIdentityBody createIdentityBody = ; // CreateIdentityBody |
 try {
     final response = api.createIdentity(createIdentityBody);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->createIdentity: $e\n');
 }
 ```
@@ -144,7 +144,7 @@ final CreateRecoveryCodeForIdentityBody createRecoveryCodeForIdentityBody = ; //
 try {
     final response = api.createRecoveryCodeForIdentity(createRecoveryCodeForIdentityBody);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->createRecoveryCodeForIdentity: $e\n');
 }
 ```
@@ -191,7 +191,7 @@ final CreateRecoveryLinkForIdentityBody createRecoveryLinkForIdentityBody = ; //
 try {
     final response = api.createRecoveryLinkForIdentity(createRecoveryLinkForIdentityBody);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->createRecoveryLinkForIdentity: $e\n');
 }
 ```
@@ -237,7 +237,7 @@ final String id = id_example; // String | ID is the identity's ID.
 
 try {
     api.deleteIdentity(id);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->deleteIdentity: $e\n');
 }
 ```
@@ -264,7 +264,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **deleteIdentityCredentials**
-> Identity deleteIdentityCredentials(id, type)
+> deleteIdentityCredentials(id, type)
 
 Delete a credential for a specific identity
 
@@ -283,9 +283,8 @@ final String id = id_example; // String | ID is the identity's ID.
 final String type = type_example; // String | Type is the credential's Type. One of totp, webauthn, lookup
 
 try {
-    final response = api.deleteIdentityCredentials(id, type);
-    print(response);
-} catch on DioError (e) {
+    api.deleteIdentityCredentials(id, type);
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->deleteIdentityCredentials: $e\n');
 }
 ```
@@ -299,7 +298,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Identity**](Identity.md)
+void (empty response body)
 
 ### Authorization
 
@@ -332,7 +331,7 @@ final String id = id_example; // String | ID is the identity's ID.
 
 try {
     api.deleteIdentitySessions(id);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->deleteIdentitySessions: $e\n');
 }
 ```
@@ -378,7 +377,7 @@ final String id = id_example; // String | ID is the session's ID.
 
 try {
     api.disableSession(id);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->disableSession: $e\n');
 }
 ```
@@ -425,7 +424,7 @@ final String id = id_example; // String | ID is the session's ID.
 try {
     final response = api.extendSession(id);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->extendSession: $e\n');
 }
 ```
@@ -468,12 +467,12 @@ import 'package:ory_kratos_client/api.dart';
 
 final api = OryKratosClient().getIdentityApi();
 final String id = id_example; // String | ID must be set to the ID of identity you want to get
-final BuiltList<String> includeCredential = ; // BuiltList<String> | Include Credentials in Response  Currently, only `oidc` is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token.
+final BuiltList<String> includeCredential = ; // BuiltList<String> | Include Credentials in Response  Include any credential, for example `password` or `oidc`, in the response. When set to `oidc`, This will return the initial OAuth 2.0 Access Token, OAuth 2.0 Refresh Token and the OpenID Connect ID Token if available.
 
 try {
     final response = api.getIdentity(id, includeCredential);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->getIdentity: $e\n');
 }
 ```
@@ -483,7 +482,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **String**| ID must be set to the ID of identity you want to get | 
- **includeCredential** | [**BuiltList&lt;String&gt;**](String.md)| Include Credentials in Response  Currently, only `oidc` is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token. | [optional] 
+ **includeCredential** | [**BuiltList&lt;String&gt;**](String.md)| Include Credentials in Response  Include any credential, for example `password` or `oidc`, in the response. When set to `oidc`, This will return the initial OAuth 2.0 Access Token, OAuth 2.0 Refresh Token and the OpenID Connect ID Token if available. | [optional] 
 
 ### Return type
 
@@ -517,7 +516,7 @@ final String id = id_example; // String | ID must be set to the ID of schema you
 try {
     final response = api.getIdentitySchema(id);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->getIdentitySchema: $e\n');
 }
 ```
@@ -565,7 +564,7 @@ final BuiltList<String> expand = ; // BuiltList<String> | ExpandOptions is a que
 try {
     final response = api.getSession(id, expand);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->getSession: $e\n');
 }
 ```
@@ -615,7 +614,7 @@ final String credentialsIdentifier = credentialsIdentifier_example; // String | 
 try {
     final response = api.listIdentities(perPage, page, credentialsIdentifier);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->listIdentities: $e\n');
 }
 ```
@@ -661,7 +660,7 @@ final int page = 789; // int | Pagination Page  This value is currently an integ
 try {
     final response = api.listIdentitySchemas(perPage, page);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->listIdentitySchemas: $e\n');
 }
 ```
@@ -712,7 +711,7 @@ final bool active = true; // bool | Active is a boolean flag that filters out se
 try {
     final response = api.listIdentitySessions(id, perPage, page, active);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->listIdentitySessions: $e\n');
 }
 ```
@@ -765,7 +764,7 @@ final BuiltList<String> expand = ; // BuiltList<String> | ExpandOptions is a que
 try {
     final response = api.listSessions(pageSize, pageToken, active, expand);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->listSessions: $e\n');
 }
 ```
@@ -816,7 +815,7 @@ final BuiltList<JsonPatch> jsonPatch = ; // BuiltList<JsonPatch> |
 try {
     final response = api.patchIdentity(id, jsonPatch);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->patchIdentity: $e\n');
 }
 ```
@@ -865,7 +864,7 @@ final UpdateIdentityBody updateIdentityBody = ; // UpdateIdentityBody |
 try {
     final response = api.updateIdentity(id, updateIdentityBody);
     print(response);
-} catch on DioError (e) {
+} catch on DioException (e) {
     print('Exception when calling IdentityApi->updateIdentity: $e\n');
 }
 ```
